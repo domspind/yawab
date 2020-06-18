@@ -11,4 +11,5 @@ The project is loosely based on the work of Pelle Beckman (https://github.com/pb
 ## License
 
 Copyright (c) 2020 Dominik Spindler
+
 This project is released under the MIT license. Please have at the LICENSE file for the full license text.
