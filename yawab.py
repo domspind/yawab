@@ -3,8 +3,10 @@
 import os
 import re
 
+import calendar
 import configparser
 from enum import Enum
+import locale
 import logging
 import qrcode
 
@@ -16,8 +18,15 @@ def setup_logger():
     logging.basicConfig(level=logging.DEBUG)
 
 
+def setup_locale():
+    config = Configuration()
+    locale_string = config.get_locale()
+    locale.setlocale(locale.LC_ALL, locale_string)
+
+
 def main():
     setup_logger()
+    setup_locale()
 
     chat_parser = ChatParser()
     msg_processor = MessageProcessor()
@@ -55,6 +64,10 @@ class Configuration:
     @staticmethod
     def get_media_server_url():
         return Configuration._config.get('Media', 'ServerUrl')
+
+    @staticmethod
+    def get_locale():
+        return Configuration._config.get('Localization', 'Locale')
 
     @staticmethod
     def get_localizable_string(key):
