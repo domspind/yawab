@@ -29,12 +29,12 @@ def main():
     setup_locale()
 
     chat_parser = ChatParser()
-    msg_processor = MessageProcessor()
+    latex_generator = LatexGenerator()
 
     messages = chat_parser.parse()
 
     for message in messages:
-        msg_processor.process_message(message)
+        latex_generator.process_message(message)
 
     return
 
@@ -146,15 +146,15 @@ class Line:
             logging.getLogger("Line").warning("Found and removed unsupported attachment: " + content)
             return
 
-        # handle unknown phone numbers
-        # TODO find @<phone-number> in text (unknown number) and replace
-
         # handle URLs
         # TODO
 
         # if it's none of the above it's probably just text
         self.type = LineType.TEXT
         self.content = content
+
+        # handle unknown phone numbers
+        # TODO find @<phone-number> in text (unknown number) and replace
 
         return
 
@@ -182,10 +182,22 @@ class Message:
 #
 class ChatParser:
     _config = Configuration()
+    _logger = logging.getLogger("ChatParser")
     _timestampRegex = r"\d{2}.\d{2}.\d{2},\s\d{2}:\d{2}\s-\s"
 
     def __init__(self):
         self.__message = None
+
+    def log_message(self):
+        log_string = "Message #" + str(self.__message.index)
+        log_string += "\n  Date: " + self.__message.date
+        log_string += "\n  Time: " + self.__message.time
+        log_string += "\n  Sender: " + self.__message.sender
+        for line in self.__message.lines:
+            if line.type is not LineType.SKIP:
+                log_string += "\n  Line: " + line.content
+
+        ChatParser._logger.log(logging.TRACE, log_string)
 
     def process_line(self, line):
         # find timestamp
@@ -194,6 +206,7 @@ class ChatParser:
 
             # process the previous message
             if self.__message is not None:
+                self.log_message()
                 yield self.__message
                 self.__message = None
 
@@ -235,31 +248,17 @@ class ChatParser:
 
             # process the last message
             if self.__message is not None:
+                self.log_message()
                 yield self.__message
                 self.__message = None
 
 
-class MessageProcessor:
-    _logger = logging.getLogger("MessageProcessor")
-
-    @staticmethod
-    def log_message(message):
-        log_string = "Message #" + str(message.index)
-        log_string += "\n  Date: " + message.date
-        log_string += "\n  Time: " + message.time
-        log_string += "\n  Sender: " + message.sender
-        for line in message.lines:
-            if line.type is not LineType.SKIP:
-                log_string += "\n  Line: " + line.content
-
-        MessageProcessor._logger.log(logging.TRACE, log_string)
-
+class LatexGenerator:
     def process_message(self, message):
-        self.log_message(message)
-
         # TODO process messages
         # for line in message.lines:
         #    self.process_line(line)
+        return
 
 
 if __name__ == '__main__':
