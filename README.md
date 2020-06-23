@@ -1,5 +1,5 @@
 # yawab - Yet another WhatsApp book
-This project let's you create a book from your WhatsApp chat backup using Python and LaTeX.
+This project lets you create a book from your WhatsApp chat backup using Python and LaTeX.
 
 ## Incentive
 
